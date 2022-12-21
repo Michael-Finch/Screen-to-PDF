@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Ebooker"
         mc:Ignorable="d"
         Title="EBooker" SizeToContent="WidthAndHeight" ResizeMode="CanMinimize">
-    <Grid Height="295" Width="488">
+    <Grid Height="311" Width="488">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
@@ -24,7 +24,8 @@
         <Button x:Name="btnCoordinatesTLC" Content="Set" HorizontalAlignment="Left" Margin="130,13,0,0" VerticalAlignment="Top"/>
         <Button x:Name="btnCoordinatesTP" Content="Set" HorizontalAlignment="Left" Margin="130,113,0,0" VerticalAlignment="Top"/>
         <Button x:Name="btnStart" Content="Go! Go! Go!" HorizontalAlignment="Left" Margin="43,265,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="txtboxOutputLog" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="183,0,0,0" Text="Output Log" HorizontalAlignment="Left" Width="299" Height="282" VerticalAlignment="Center" />
+        <TextBox x:Name="txtboxOutputLog" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="183,6,0,0" Text="Output Log" HorizontalAlignment="Left" Width="299" Height="282" VerticalAlignment="Top" IsReadOnly="True"/>
+        <StatusBar Margin="0,293,0,0"/>
 
 
     </Grid>
