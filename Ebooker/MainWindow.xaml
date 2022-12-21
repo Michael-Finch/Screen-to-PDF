@@ -5,8 +5,27 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Ebooker"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="EBooker" Height="340" Width="469">
+    <Grid Margin="0,0,0,0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Label Content="Top left corner" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lblCoordinatesTLC" Content="(0,0)" HorizontalAlignment="Left" Margin="10,36,0,0" VerticalAlignment="Top"/>
+        <Label Content="Bottom right corner" HorizontalAlignment="Left" Margin="10,62,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lblCoordinatesBRC" Content="(0,0)" HorizontalAlignment="Left" Margin="10,84,0,0" VerticalAlignment="Top"/>
+        <Label Content="Turn Page" HorizontalAlignment="Left" Margin="10,110,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lblCoordinatesTP" Content="(0,0)" HorizontalAlignment="Left" Margin="10,136,0,0" VerticalAlignment="Top"/>
+        <Label Content="Number of Pages" HorizontalAlignment="Left" Margin="10,162,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="txtboxNumPages" HorizontalAlignment="Left" Margin="16,188,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120"/>
+        <Label Content="Screenshot Delay" HorizontalAlignment="Left" Margin="11,214,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="txtboxDelay" HorizontalAlignment="Left" Margin="16,240,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120"/>
+        <Button x:Name="btnCoordinatesBRC" Content="Set" HorizontalAlignment="Left" Margin="130,65,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="btnCoordinatesTLC" Content="Set" HorizontalAlignment="Left" Margin="130,13,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="btnCoordinatesTP" Content="Set" HorizontalAlignment="Left" Margin="130,113,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="btnStart" Content="Go! Go! Go!" HorizontalAlignment="Left" Margin="11,289,0,0" VerticalAlignment="Top" Width="141"/>
+        <TextBox x:Name="txtboxOutputLog" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="183,10,10,15" Text="Output Log" />
+
 
     </Grid>
 </Window>
