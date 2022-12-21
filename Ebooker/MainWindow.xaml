@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Ebooker"
         mc:Ignorable="d"
-        Title="EBooker" SizeToContent="WidthAndHeight" ResizeMode="CanMinimize" MouseMove="Window_MouseMove" MouseUp="Window_MouseUp">
+        Title="Screen to PDF" SizeToContent="WidthAndHeight" ResizeMode="CanMinimize" MouseMove="Window_MouseMove" MouseUp="Window_MouseUp" Topmost="True">
     <Grid Height="311" Width="488">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
