@@ -202,7 +202,15 @@ namespace ScreenToPDF
                         Graphics g = Graphics.FromImage(bmp);
 
                         g.CopyFromScreen(coordsTLX, coordsTLY, 0, 0, bmp.Size);
-                        bmp.Save(directory + i + ".png", ImageFormat.Png);
+                        bmp.Save(directory + "\\" + i + ".png", ImageFormat.Png);
+
+                        //Click to turn the page
+                        MouseOperations.SetCursorPosition(coordsTPX, coordsTPY);
+                        MouseOperations.MouseEvent(MouseOperations.MouseEventFlags.LeftDown);
+                        MouseOperations.MouseEvent(MouseOperations.MouseEventFlags.LeftUp);
+
+                        //Wait for page to turn
+                        Thread.Sleep(delay);
                     }
                 }
             }

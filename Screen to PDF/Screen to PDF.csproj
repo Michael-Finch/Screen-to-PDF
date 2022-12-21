@@ -26,4 +26,10 @@
     <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="PdfSharp">
+      <HintPath>libs\PdfSharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
