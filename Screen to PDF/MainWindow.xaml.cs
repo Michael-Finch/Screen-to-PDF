@@ -7,6 +7,10 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Threading;
 using System.IO;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using iTextSharp.text.html;
+using iTextSharp.text.html.simpleparser;
 
 namespace ScreenToPDF
 {
@@ -164,16 +168,18 @@ namespace ScreenToPDF
         //Begin clicking through the book and saving screenshots
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            if(coordsTLX == coordsBRX && coordsTLY == coordsBRY)
+            if (coordsTLX == coordsBRX && coordsTLY == coordsBRY)
             {
                 txtboxOutputLog.AppendText("Error: Corners cannot be the same\n");
             }
-            else if(coordsTLX > coordsBRX || coordsTLY > coordsBRY)
+            else if (coordsTLX > coordsBRX || coordsTLY > coordsBRY)
             {
                 txtboxOutputLog.AppendText("Error: Corners cannot be in wrong positions\n");
             }
             else
             {
+                txtboxOutputLog.AppendText("Waiting for save location\n");
+
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
                 saveFileDialog.Filter = "PDF Files | *.pdf";
                 saveFileDialog.DefaultExt = "pdf";
@@ -186,12 +192,15 @@ namespace ScreenToPDF
                     txtboxOutputLog.AppendText("Saving file " + fileName + "\n");
                     txtboxOutputLog.AppendText("Saving to directory " + directory + "\n");
 
+                    txtboxOutputLog.AppendText("Do not move the cursor\nPress escape to close the program at any time\n");
+
                     //Sleep to avoid screenshotting save file dialog
                     Thread.Sleep(1000);
 
                     //Go through each page
-                    for(int i = 1; i <= numPages; ++i)
+                    for (int i = 1; i <= numPages; ++i)
                     {
+                        txtboxOutputLog.AppendText("Screenshotting page " + i + "\n");
                         //Save a screenshot
                         double screenLeft = SystemParameters.VirtualScreenLeft;
                         double screenTop = SystemParameters.VirtualScreenTop;
@@ -204,14 +213,55 @@ namespace ScreenToPDF
                         g.CopyFromScreen(coordsTLX, coordsTLY, 0, 0, bmp.Size);
                         bmp.Save(directory + "\\" + i + ".png", ImageFormat.Png);
 
-                        //Click to turn the page
-                        MouseOperations.SetCursorPosition(coordsTPX, coordsTPY);
-                        MouseOperations.MouseEvent(MouseOperations.MouseEventFlags.LeftDown);
-                        MouseOperations.MouseEvent(MouseOperations.MouseEventFlags.LeftUp);
-
-                        //Wait for page to turn
-                        Thread.Sleep(delay);
+                        if(i != numPages)
+                        {
+                            txtboxOutputLog.AppendText("Turning to page " + (int)(i + 1) + "\n");
+                            //Click to turn the page
+                            MouseOperations.SetCursorPosition(coordsTPX, coordsTPY);
+                            MouseOperations.MouseEvent(MouseOperations.MouseEventFlags.LeftDown);
+                            MouseOperations.MouseEvent(MouseOperations.MouseEventFlags.LeftUp);
+                            //Wait for page to turn
+                            Thread.Sleep(delay);
+                        }
+                        else
+                        {
+                            txtboxOutputLog.AppendText("Finished screenshotting\n");
+                        }
                     }
+
+                    txtboxOutputLog.AppendText("Creating PDF\n");
+                    //Create a new pdf
+                    iTextSharp.text.Rectangle pageSize = new iTextSharp.text.Rectangle(0, 0, coordsBRX - coordsTLX, coordsBRY - coordsTLY);
+                    var ms = new MemoryStream();
+                    var document = new iTextSharp.text.Document(pageSize, 0, 0, 0, 0);
+                    iTextSharp.text.pdf.PdfWriter.GetInstance(document, ms).SetFullCompression();
+                    document.Open();
+
+                    txtboxOutputLog.AppendText("Adding images to PDF\n");
+                    //Add each image to the pdf
+                    for (int i = 1; i <= numPages; ++i)
+                    {
+                        var image = iTextSharp.text.Image.GetInstance(directory + "/" + i + ".png");
+                        document.Add(image);
+                    }
+
+                    txtboxOutputLog.AppendText("Finalizing PDF\n");
+                    //Close the file
+                    document.Close();
+                    //Write the file
+                    File.WriteAllBytes(saveFileDialog.FileName, ms.ToArray());
+                    //File.WriteAllBytes("directory" + "/" + fileName, ms.ToArray());
+
+                    txtboxOutputLog.AppendText("Cleaning up\n");
+                    for(int i = 1; i <= numPages; ++i)
+                    {
+                        File.Delete(directory + "/" + i + ".png");
+                    }
+                    txtboxOutputLog.AppendText("Done!\n");
+                }
+                else
+                {
+                    txtboxOutputLog.AppendText("Error receiving save location\n");
                 }
             }
         }
