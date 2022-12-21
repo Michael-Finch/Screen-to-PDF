@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Win32;
+using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Threading;
+using System.IO;
 
 namespace ScreenToPDF
 {
@@ -26,12 +21,12 @@ namespace ScreenToPDF
         int coordsBRY = 0;
         int coordsTPX = 0;
         int coordsTPY = 0;
-        int numPages = 0;
-        int delay = 0;
+        int numPages = 1;
+        int delay = 500;
 
         int coordinateMode = 0; //0 = none, 1 = top left corner, 2 = bottom right corner, 3 = turn page button
 
-        String filename = "";
+        String fileName = "";
         String directory = "";
 
         public MainWindow()
@@ -39,13 +34,13 @@ namespace ScreenToPDF
             InitializeComponent();
 
             //Populate textboxes with reasonable defaults
-            txtboxNumPages.Text = "0";
-            txtboxDelay.Text = "0";
+            txtboxNumPages.Text = "1";
+            txtboxDelay.Text = "500";
         }
 
         private void Window_MouseMove(object sender, MouseEventArgs e)
         {
-            if(coordinateMode != 0)
+            if (coordinateMode != 0)
             {
                 this.CaptureMouse();
             }
@@ -125,16 +120,16 @@ namespace ScreenToPDF
             bool validNumber = false;
             if (int.TryParse(txtboxNumPages.Text, out numToTry))
             {
-                if(numToTry >= 0)
+                if (numToTry >= 0)
                 {
                     validNumber = true;
                     numPages = numToTry;
                     txtboxOutputLog.AppendText("Pages set to " + numPages + "\n");
                 }
             }
-            if(validNumber == false)
+            if (validNumber == false)
             {
-                txtboxOutputLog.AppendText("Invalid number of pages, please enter a non-ngegative integer.\n");
+                txtboxOutputLog.AppendText("Invalid number of pages, please enter a non-ngegative integer\n");
                 txtboxNumPages.Text = numPages.ToString();
             }
         }
@@ -155,7 +150,7 @@ namespace ScreenToPDF
             }
             if (validNumber == false)
             {
-                txtboxOutputLog.AppendText("Invalid delay, please enter a non-ngegative integer.\n");
+                txtboxOutputLog.AppendText("Invalid delay, please enter a non-ngegative integer\n");
                 txtboxDelay.Text = delay.ToString();
             }
         }
@@ -164,6 +159,53 @@ namespace ScreenToPDF
         private void txtboxOutputLog_TextChanged(object sender, TextChangedEventArgs e)
         {
             txtboxOutputLog.ScrollToEnd();
+        }
+
+        //Begin clicking through the book and saving screenshots
+        private void btnStart_Click(object sender, RoutedEventArgs e)
+        {
+            if(coordsTLX == coordsBRX && coordsTLY == coordsBRY)
+            {
+                txtboxOutputLog.AppendText("Error: Corners cannot be the same\n");
+            }
+            else if(coordsTLX > coordsBRX || coordsTLY > coordsBRY)
+            {
+                txtboxOutputLog.AppendText("Error: Corners cannot be in wrong positions\n");
+            }
+            else
+            {
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Filter = "PDF Files | *.pdf";
+                saveFileDialog.DefaultExt = "pdf";
+
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    //Set the file name and save location
+                    fileName = Path.GetFileName(saveFileDialog.FileName);
+                    directory = Path.GetDirectoryName(saveFileDialog.FileName);
+                    txtboxOutputLog.AppendText("Saving file " + fileName + "\n");
+                    txtboxOutputLog.AppendText("Saving to directory " + directory + "\n");
+
+                    //Sleep to avoid screenshotting save file dialog
+                    Thread.Sleep(1000);
+
+                    //Go through each page
+                    for(int i = 1; i <= numPages; ++i)
+                    {
+                        //Save a screenshot
+                        double screenLeft = SystemParameters.VirtualScreenLeft;
+                        double screenTop = SystemParameters.VirtualScreenTop;
+                        double screenWidth = SystemParameters.VirtualScreenWidth;
+                        double screenHeight = SystemParameters.VirtualScreenHeight;
+
+                        Bitmap bmp = new Bitmap(coordsBRX - coordsTLX, coordsBRY - coordsTLY);
+                        Graphics g = Graphics.FromImage(bmp);
+
+                        g.CopyFromScreen(coordsTLX, coordsTLY, 0, 0, bmp.Size);
+                        bmp.Save(directory + i + ".png", ImageFormat.Png);
+                    }
+                }
+            }
         }
     }
 }
