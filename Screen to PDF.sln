@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32519.379
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Screen to PDF", "Ebooker\Screen to PDF.csproj", "{701657F1-D4AA-42E9-9865-607D3BA77919}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Screen to PDF", "Screen to PDF\Screen to PDF.csproj", "{701657F1-D4AA-42E9-9865-607D3BA77919}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
