@@ -11,6 +11,7 @@ using iTextSharp.text;
 using iTextSharp.text.pdf;
 using iTextSharp.text.html;
 using iTextSharp.text.html.simpleparser;
+using System.Threading.Tasks;
 
 namespace ScreenToPDF
 {
@@ -166,7 +167,7 @@ namespace ScreenToPDF
         }
 
         //Begin clicking through the book and saving screenshots
-        private void btnStart_Click(object sender, RoutedEventArgs e)
+        private async void btnStart_Click(object sender, RoutedEventArgs e)
         {
             if (coordsTLX == coordsBRX && coordsTLY == coordsBRY)
             {
@@ -195,7 +196,7 @@ namespace ScreenToPDF
                     txtboxOutputLog.AppendText("Do not move the cursor\nPress escape to close the program at any time\n");
 
                     //Sleep to avoid screenshotting save file dialog
-                    Thread.Sleep(1000);
+                    await Task.Delay(1000);
 
                     //Go through each page
                     for (int i = 1; i <= numPages; ++i)
@@ -221,7 +222,7 @@ namespace ScreenToPDF
                             MouseOperations.MouseEvent(MouseOperations.MouseEventFlags.LeftDown);
                             MouseOperations.MouseEvent(MouseOperations.MouseEventFlags.LeftUp);
                             //Wait for page to turn
-                            Thread.Sleep(delay);
+                            await Task.Delay(delay);
                         }
                         else
                         {
