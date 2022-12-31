@@ -5,6 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="Screen to PDF" SizeToContent="WidthAndHeight" ResizeMode="CanMinimize" MouseMove="Window_MouseMove" MouseUp="Window_MouseUp" Topmost="True">
+    <Window.InputBindings>
+        <KeyBinding Command="ApplicationCommands.Close" Key="Esc" />
+    </Window.InputBindings>
+    <Window.CommandBindings>
+        <CommandBinding Command="ApplicationCommands.Close" Executed="CloseCommandBinding_Executed" />
+    </Window.CommandBindings>
     <Grid Height="311" Width="488">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>

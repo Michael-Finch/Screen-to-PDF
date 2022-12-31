@@ -1,34 +1,42 @@
-﻿using Microsoft.Win32;
+﻿/****************************** Screen to PDF ******************************\
+Author: Michael Finch
+December 2022
+
+This is a desktop application that takes sequential screenshots and converts
+them into a PDF.
+
+Libraries Used:
+PDFSharp
+\***************************************************************************/
+using Microsoft.Win32;
 using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Threading;
 using System.IO;
-using iTextSharp.text;
-using iTextSharp.text.pdf;
-using iTextSharp.text.html;
-using iTextSharp.text.html.simpleparser;
 using System.Threading.Tasks;
 
 namespace ScreenToPDF
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        int coordsTLX = 0;
+        //Screen coordinates
+        int coordsTLX = 0; //Top left corner of screenshot
         int coordsTLY = 0;
-        int coordsBRX = 0;
+        int coordsBRX = 0; //Bottom right corner
         int coordsBRY = 0;
-        int coordsTPX = 0;
+        int coordsTPX = 0; //"Turn page" button or similar
         int coordsTPY = 0;
+
+        //How many pages
         int numPages = 1;
+
+        //How many milliseconds to delay taking a screenshot after the page is turned
         int delay = 500;
 
+        //What screen coordinates are currently being set
         int coordinateMode = 0; //0 = none, 1 = top left corner, 2 = bottom right corner, 3 = turn page button
 
         String fileName = "";
@@ -43,6 +51,7 @@ namespace ScreenToPDF
             txtboxDelay.Text = "500";
         }
 
+        //Method for tracking where the mouse is on-screen
         private void Window_MouseMove(object sender, MouseEventArgs e)
         {
             if (coordinateMode != 0)
@@ -55,6 +64,7 @@ namespace ScreenToPDF
             }
         }
 
+        //Method for setting coordinates to the mouse position
         private void Window_MouseUp(object sender, MouseButtonEventArgs e)
         {
             //Not setting coordinates
@@ -96,22 +106,26 @@ namespace ScreenToPDF
                     txtboxOutputLog.AppendText("Turn page set to (" + coordsTPX + "," + coordsTPY + ")\n");
                 }
 
+                //Done setting coordinates
                 coordinateMode = 0;
             }
         }
 
+        //Set the top left corner
         private void btnCoordinatesTLC_Click(object sender, RoutedEventArgs e)
         {
             coordinateMode = 1;
             txtboxOutputLog.AppendText("Setting coordinates of top left corner\n");
         }
 
+        //Set the bottom right corner
         private void btnCoordinatesBRC_Click(object sender, RoutedEventArgs e)
         {
             coordinateMode = 2;
             txtboxOutputLog.AppendText("Setting coordinates of bottom right corner\n");
         }
 
+        //Set the turn page button
         private void btnCoordinatesTP_Click(object sender, RoutedEventArgs e)
         {
             coordinateMode = 3;
@@ -166,9 +180,27 @@ namespace ScreenToPDF
             txtboxOutputLog.ScrollToEnd();
         }
 
-        //Begin clicking through the book and saving screenshots
+        //Close the application when the Escape key is pressed
+        private void CloseCommandBinding_Executed(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
+        {
+            deleteImageFiles();
+            this.Close();
+        }
+
+        //Method for deleting temporary image files
+        private void deleteImageFiles()
+        {
+            //Delete temporary image files
+            for (int i = 1; i <= numPages; ++i)
+            {
+                File.Delete(directory + "/" + i + ".png");
+            }
+        }
+
+        //Start button is clicked
         private async void btnStart_Click(object sender, RoutedEventArgs e)
         {
+            //Ensure the screenshot area is valid
             if (coordsTLX == coordsBRX && coordsTLY == coordsBRY)
             {
                 txtboxOutputLog.AppendText("Error: Corners cannot be the same\n");
@@ -177,14 +209,17 @@ namespace ScreenToPDF
             {
                 txtboxOutputLog.AppendText("Error: Corners cannot be in wrong positions\n");
             }
+            //Valid screenshot area
             else
             {
+                //Determine where to save the file
                 txtboxOutputLog.AppendText("Waiting for save location\n");
 
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
                 saveFileDialog.Filter = "PDF Files | *.pdf";
                 saveFileDialog.DefaultExt = "pdf";
 
+                //If the file name and location are good
                 if (saveFileDialog.ShowDialog() == true)
                 {
                     //Set the file name and save location
@@ -192,8 +227,7 @@ namespace ScreenToPDF
                     directory = Path.GetDirectoryName(saveFileDialog.FileName);
                     txtboxOutputLog.AppendText("Saving file " + fileName + "\n");
                     txtboxOutputLog.AppendText("Saving to directory " + directory + "\n");
-
-                    txtboxOutputLog.AppendText("Do not move the cursor\nPress escape to close the program at any time\n");
+                    txtboxOutputLog.AppendText("Press escape to close the program at any time\n");
 
                     //Set up progress bar
                     progressBar.Value = 0;
@@ -217,8 +251,7 @@ namespace ScreenToPDF
 
                         g.CopyFromScreen(coordsTLX, coordsTLY, 0, 0, bmp.Size);
                         bmp.Save(directory + "\\" + i + ".png", ImageFormat.Png);
-
-                        if(i != numPages)
+                        if (i != numPages)
                         {
                             txtboxOutputLog.AppendText("Turning to page " + (int)(i + 1) + "\n");
                             //Click to turn the page
@@ -228,6 +261,12 @@ namespace ScreenToPDF
 
                             //Update progress bar
                             progressBar.Value = i * percentPerPage;
+
+                            //Occasionally remind the user they can close the program with the Escape key
+                            if(i % 20 == 0)
+                            {
+                                txtboxOutputLog.AppendText("Press escape to close the program at any time\n");
+                            }
 
                             //Wait for page to turn
                             await Task.Delay(delay);
@@ -272,11 +311,8 @@ namespace ScreenToPDF
                     txtboxOutputLog.AppendText("Cleaning up\n");
                     await Task.Delay(500);
 
-                    //Delete temporary image files
-                    for (int i = 1; i <= numPages; ++i)
-                    {
-                        File.Delete(directory + "/" + i + ".png");
-                    }
+                    //Clean up
+                    deleteImageFiles();
                     txtboxOutputLog.AppendText("Done!\n");
 
                     //Update progress bar
