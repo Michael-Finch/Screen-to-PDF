@@ -195,6 +195,10 @@ namespace ScreenToPDF
 
                     txtboxOutputLog.AppendText("Do not move the cursor\nPress escape to close the program at any time\n");
 
+                    //Set up progress bar
+                    progressBar.Value = 0;
+                    double percentPerPage = 75.0 / numPages; //Save 25% of the bar for creating the PDF file
+
                     //Sleep to avoid screenshotting save file dialog
                     await Task.Delay(1000);
 
@@ -221,16 +225,19 @@ namespace ScreenToPDF
                             MouseOperations.SetCursorPosition(coordsTPX, coordsTPY);
                             MouseOperations.MouseEvent(MouseOperations.MouseEventFlags.LeftDown);
                             MouseOperations.MouseEvent(MouseOperations.MouseEventFlags.LeftUp);
+
+                            //Update progress bar
+                            progressBar.Value = i * percentPerPage;
+
                             //Wait for page to turn
                             await Task.Delay(delay);
                         }
-                        else
-                        {
-                            txtboxOutputLog.AppendText("Finished screenshotting\n");
-                        }
                     }
 
+                    //Update log and progress bar
                     txtboxOutputLog.AppendText("Creating PDF\n");
+                    await Task.Delay(500);
+
                     //Create a new pdf
                     iTextSharp.text.Rectangle pageSize = new iTextSharp.text.Rectangle(0, 0, coordsBRX - coordsTLX, coordsBRY - coordsTLY);
                     var ms = new MemoryStream();
@@ -238,7 +245,11 @@ namespace ScreenToPDF
                     iTextSharp.text.pdf.PdfWriter.GetInstance(document, ms).SetFullCompression();
                     document.Open();
 
+                    //Update log and progress bar
+                    progressBar.Value = 80;
                     txtboxOutputLog.AppendText("Adding images to PDF\n");
+                    await Task.Delay(500);
+
                     //Add each image to the pdf
                     for (int i = 1; i <= numPages; ++i)
                     {
@@ -246,19 +257,30 @@ namespace ScreenToPDF
                         document.Add(image);
                     }
 
-                    txtboxOutputLog.AppendText("Finalizing PDF\n");
+                    //Update log and progress bar
+                    progressBar.Value = 90;
+                    txtboxOutputLog.AppendText("Saving PDF\n");
+                    await Task.Delay(500);
+
                     //Close the file
                     document.Close();
                     //Write the file
                     File.WriteAllBytes(saveFileDialog.FileName, ms.ToArray());
-                    //File.WriteAllBytes("directory" + "/" + fileName, ms.ToArray());
 
+                    //Update log and progress bar
+                    progressBar.Value = 95;
                     txtboxOutputLog.AppendText("Cleaning up\n");
-                    for(int i = 1; i <= numPages; ++i)
+                    await Task.Delay(500);
+
+                    //Delete temporary image files
+                    for (int i = 1; i <= numPages; ++i)
                     {
                         File.Delete(directory + "/" + i + ".png");
                     }
                     txtboxOutputLog.AppendText("Done!\n");
+
+                    //Update progress bar
+                    progressBar.Value = 100;
                 }
                 else
                 {

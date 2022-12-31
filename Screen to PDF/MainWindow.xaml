@@ -24,7 +24,7 @@
         <Button x:Name="btnCoordinatesTP" Content="Set" HorizontalAlignment="Left" Margin="130,113,0,0" VerticalAlignment="Top" Click="btnCoordinatesTP_Click"/>
         <Button x:Name="btnStart" Content="Go! Go! Go!" HorizontalAlignment="Left" Margin="43,265,0,0" VerticalAlignment="Top" Click="btnStart_Click"/>
         <TextBox x:Name="txtboxOutputLog" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="183,36,0,0" HorizontalAlignment="Left" Width="299" Height="252" VerticalAlignment="Top" IsReadOnly="True" HorizontalScrollBarVisibility="Auto" TextChanged="txtboxOutputLog_TextChanged"/>
-        <StatusBar Margin="0,293,0,0"/>
+        <ProgressBar x:Name="progressBar" Margin="0,293,0,0" SmallChange="1E-07"/>
         <Label Content="Output Log" HorizontalAlignment="Left" Margin="183,10,0,0" VerticalAlignment="Top"/>
 
 
